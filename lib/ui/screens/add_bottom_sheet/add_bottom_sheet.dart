@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_sun_c11/model/todo_dm.dart';
 import 'package:todo_sun_c11/ui/utils/app_style.dart';
 import 'package:todo_sun_c11/ui/utils/date_time_extension.dart';
 
@@ -23,6 +25,8 @@ class AddBottomSheet extends StatefulWidget {
 
 class _AddBottomSheetState extends State<AddBottomSheet> {
   DateTime selectedDate = DateTime.now();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +41,16 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
             textAlign: TextAlign.center,
             style: AppStyle.bottomSheetTitle,
           ),
-          const TextField(
+           TextField(
             decoration: InputDecoration(hintText: "Enter task title"),
+            controller: titleController,
           ),
           const SizedBox(
             height: 12,
           ),
-          const TextField(
+          TextField(
             decoration: InputDecoration(hintText: "Enter task description"),
+            controller: descriptionController,
           ),
           const SizedBox(
             height: 12,
@@ -66,10 +72,33 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
                 textAlign: TextAlign.center,
               )),
           const Spacer(),
-          ElevatedButton(onPressed: () {}, child: const Text("Add"))
+          ElevatedButton(onPressed: () {
+            addTodoToFireStore();
+          }, child: const Text("Add"))
         ],
       ),
     );
+  }
+
+  void addTodoToFireStore() {
+    CollectionReference todosCollection = FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    DocumentReference doc = todosCollection.doc();
+    TodoDM todoDM = TodoDM(id: doc.id,
+        title: titleController.text,
+        date: selectedDate,
+        description: descriptionController.text, isDone: false);
+     doc.set(todoDM.toJson()).then((_) {
+      ///This callback is called when future is completed
+     }).
+     onError((error, stackTrace){
+       /// This callback is called when the throws an exception
+
+     }).
+     timeout(const Duration(milliseconds: 500), onTimeout: (){
+       /// This callback is called after duration you've in first argument
+       Navigator.pop(context);
+     });
+
   }
 
   void showMyDatePicker() async {

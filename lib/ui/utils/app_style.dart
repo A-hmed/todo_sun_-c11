@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 abstract class AppStyle {
-
   static const TextStyle appBarStyle = TextStyle(
       fontSize: 30, fontWeight: FontWeight.bold, color: AppColors.white);
   static const TextStyle titlesTextStyle = TextStyle(
@@ -18,6 +17,11 @@ abstract class AppStyle {
   static const TextStyle appBarDarkStyle = TextStyle(
       fontSize: 30, fontWeight: FontWeight.bold, color: AppColors.black);
 
-  static const TextStyle normalGreyTextStyle= TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500);
+  static const TextStyle unSelectedCalendarDayStyle = TextStyle(
+      color: AppColors.black, fontWeight: FontWeight.bold, fontSize: 15);
 
+  static TextStyle selectedCalendarDayStyle =
+      unSelectedCalendarDayStyle.copyWith(color: AppColors.primary);
+  static const TextStyle normalGreyTextStyle =
+      TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500);
 }
