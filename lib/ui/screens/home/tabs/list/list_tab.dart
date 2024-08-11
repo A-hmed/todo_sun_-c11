@@ -7,20 +7,27 @@ import 'package:todo_sun_c11/ui/utils/app_colors.dart';
 import 'package:todo_sun_c11/ui/utils/app_style.dart';
 import 'package:todo_sun_c11/ui/utils/date_time_extension.dart';
 
+import '../../../../../model/user_dm.dart';
+
 class ListTab extends StatefulWidget {
   const ListTab({super.key});
 
   @override
-  State<ListTab> createState() => _ListTabState();
+  State<ListTab> createState() => ListTabState();
 }
 
-class _ListTabState extends State<ListTab> {
+class ListTabState extends State<ListTab> {
   DateTime selectedCalendarDate = DateTime.now();
   List<TodoDM> todosList = [];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     getTodosListFromFireStore();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         buildCalendar(),
@@ -29,7 +36,6 @@ class _ListTabState extends State<ListTab> {
           child: ListView.builder(
               itemCount: todosList.length,
               itemBuilder: (context, index) {
-                print(todosList.length);
                 return Todo(
                   item: todosList[index],
                 );
@@ -49,11 +55,12 @@ class _ListTabState extends State<ListTab> {
     // }
     ///Solution2
     // numbers = nums.map((string) => int.parse(string)).toList();
-    CollectionReference todoCollection =
-        FirebaseFirestore.instance.collection(TodoDM.collectionName);
+    CollectionReference todoCollection = FirebaseFirestore.instance
+        .collection(UserDM.collectionName)
+        .doc(UserDM.currentUser!.id)
+        .collection(TodoDM.collectionName);
     QuerySnapshot querySnapshot = await todoCollection.get();
     List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-    print("56- documents size = ${documents.length}");
     todosList = documents.map((doc) {
       Map<String, dynamic> json = doc.data() as Map<String, dynamic>;
       return TodoDM.fromJson(json);
@@ -64,7 +71,7 @@ class _ListTabState extends State<ListTab> {
             todo.date.month == selectedCalendarDate.month &&
             todo.date.day == selectedCalendarDate.day)
         .toList();
-    print(todosList);
+    setState(() {});
   }
 
   buildCalendar() {
@@ -88,13 +95,11 @@ class _ListTabState extends State<ListTab> {
             firstDate: DateTime.now().subtract(Duration(days: 365)),
             focusDate: selectedCalendarDate,
             lastDate: DateTime.now().add(Duration(days: 365)),
-            onDateChange: (selectedDate) {},
             itemBuilder: (context, date, isSelected, onDateTapped) {
               return InkWell(
                 onTap: () {
-                  setState(() {
-                    selectedCalendarDate = date;
-                  });
+                  selectedCalendarDate = date;
+                  getTodosListFromFireStore();
                 },
                 child: Container(
                   decoration: BoxDecoration(

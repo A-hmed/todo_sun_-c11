@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_sun_c11/model/user_dm.dart';
 import 'package:todo_sun_c11/ui/screens/add_bottom_sheet/add_bottom_sheet.dart';
 import 'package:todo_sun_c11/ui/screens/home/tabs/list/list_tab.dart';
 import 'package:todo_sun_c11/ui/screens/home/tabs/settings/settings_tab.dart';
@@ -15,13 +16,25 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int currentIndex = 0;
-  List<Widget> tabs = [const ListTab(), const SettingsTab()];
+  GlobalKey<ListTabState> listTabKey = GlobalKey();
+  List<Widget> tabs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tabs = [
+      ListTab(
+        key: listTabKey,
+      ),
+      const SettingsTab()
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("To Do list"),
+        title: Text("Welcome ${UserDM.currentUser!.userName}"),
       ),
       body: tabs[currentIndex],
       floatingActionButton: buildFab(),
@@ -50,8 +63,9 @@ class _HomeState extends State<Home> {
       );
 
   buildFab() => FloatingActionButton(
-        onPressed: () {
-          AddBottomSheet.show(context);
+        onPressed: () async {
+          await AddBottomSheet.show(context);
+          listTabKey.currentState?.getTodosListFromFireStore();
         },
         backgroundColor: AppColors.primary,
         shape: const StadiumBorder(

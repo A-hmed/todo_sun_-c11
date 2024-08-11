@@ -7,7 +7,7 @@ extension TimeExtensions on DateTime {
   }
 
   String get dayName {
-    List<String> days = ["sat", "sun", "mon", "tue", "wed", "thurs", "fri"];
+    List<String> days = ["mon", "tue", "wed", "thurs", "fri", "sat", "sun"];
     return days[weekday - 1];
   }
 }
